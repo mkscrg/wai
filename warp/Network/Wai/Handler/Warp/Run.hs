@@ -57,7 +57,6 @@ socketConnection :: Socket -> IO Connection
 socketConnection s = do
     bufferPool <- newBufferPool
     writeBuf <- allocateBuffer bufferSize
-    let sendall = Sock.sendAll s
     return Connection {
         connSendMany = Sock.sendMany s
       , connSendAll = sendall
@@ -68,6 +67,10 @@ socketConnection s = do
       , connWriteBuffer = writeBuf
       , connBufferSize = bufferSize
       }
+  where
+    sendall bs = Sock.sendAll s bs `catch` printEx
+    printEx :: E.SomeException -> IO a
+    printEx someEx = print ("WARP SEND ERROR", s, someEx) >> throwIO someEx
 
 #if __GLASGOW_HASKELL__ < 702
 allowInterrupt :: IO ()
