@@ -47,13 +47,13 @@ import System.IO.Error (isFullErrorType, ioeGetErrorType)
 
 #if WINDOWS
 import Network.Wai.Handler.Warp.Windows
-#else
-import Network.Socket (fdSocket)
 #endif
+import Network.Socket (fdSocket)
 
 -- | Creating 'Connection' for plain HTTP based on a given socket.
 socketConnection :: Socket -> IO Connection
 socketConnection s = do
+    putStrLn $ "WARP fd: " ++ show (fdSocket s)
     bufferPool <- newBufferPool
     writeBuf <- allocateBuffer bufferSize
     let sendall = Sock.sendAll s
